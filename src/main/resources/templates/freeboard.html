@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+
+
+
+<title>연습용 board</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+
+
+<style>
+
+/* Remove the navbar's default margin-bottom and rounded borders */
+.navbar {
+	margin-bottom: 0;
+	border-radius: 0;
+}
+
+/* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+.row.content {
+	height: 450px
+}
+
+/* Set gray background color and 100% height */
+.sidenav {
+	padding-top: 20px;
+	background-color: #f1f1f1;
+	height: 100%;
+}
+
+/* Set black background color, white text and some padding */
+footer {
+	background-color: #555;
+	color: white;
+	padding: 15px;
+}
+
+/* On small screens, set height to 'auto' for sidenav and grid */
+@media screen and (max-width: 767px) {
+	.sidenav {
+		height: auto;
+		padding: 15px;
+	}
+	.row.content {
+		height: auto;
+	}
+}
+</style>
+</head>
+<body>
+	<script src="https://unpkg.com/vue"></script>
+	<script>
+		function getPost(freeid) {
+			location.href = "/freeboardInfo?freeid=" + freeid;
+		}
+		function page(pageNum) {
+			location.href = "/freeboard?pageNum=" + pageNum;
+
+		}
+
+		function viewPost(freeid) {
+			location.href = "/freeboardInfo?freeid=" + freeid;
+
+		}
+		new Vue({
+			el:'#board',
+			data:{
+				posts:[]
+			},
+			created(){
+				fetch('https://jsonplaceholder.typicode.com/posts/1')
+				.then((response)=>{
+					if(response.ok){
+						return response.json();
+					}
+					throw new Error('Network response was not ok');
+				}).then((json)=>{
+					this.posts.push({
+						writer:json.writer,
+						title:json.title,
+						content:json.content
+					});
+				})
+				.catch((error)=>{
+					console.log(error);
+				});
+			}
+		});
+	</script>
+
+	<nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+
+			<div class="collapse navbar-collapse" id="myNavbar">
+				<ul class="nav navbar-nav">
+					<li class="active"><a href="freeboard">게시글목록조회</a></li>
+					<li th:if="${session.loginUser!=null}"><a href="/editpage">회원정보메뉴</a></li>
+
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li th:if="${session.loginUser==null}"><a href="/joinpage"><span
+							class="glyphicon glyphicon-log-in"></span>회원가입</a></li>
+					<li th:if="${session.loginUser==null}"><a href="/loginpage"><span
+							class="glyphicon glyphicon-log-in"></span> 로그인</a></li>
+					<li th:if="${session.loginUser!=null}"><a href="/logout"><span
+							class="glyphicon glyphicon-log-in"></span> 로그아웃</a></li>
+
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container-fluid text-center">
+		<div class="row content">
+
+			<div class="col-sm-8 text-left">
+				<h4>게시글</h4>
+				<a href="/freeboardWritePage">글쓰기</a>
+				<table>
+					<thead>
+						<tr>
+							<th>&nbsp;&nbsp;글 번호&nbsp;&nbsp;</th>
+							<th>&nbsp;&nbsp;글 제목&nbsp;&nbsp;</th>
+							<th>&nbsp;&nbsp;작성자&nbsp;&nbsp;</th>
+
+						</tr>
+
+
+						<tbody th:each="board:${session.boardList}"><tr>
+							<td><span th:text="${board.getFreeid()}"></span></td>
+							<td><a
+								th:onclick="|javascript:getPost('${board.getFreeid()}')|"
+								th:text="${board.getTitle()}"> </a></td>
+							<td><span th:text="${board.getWriter()}"> </span></td>
+
+						</tr>
+
+
+
+					</tbody>
+
+					</thead>
+				</table>
+
+
+				<a th:if="${session.pageMaker.isPrev()}"
+					style="text-decoration: none;"
+					th:onclick="|javascript:page('${session.pageMaker.getStartPage()}')|">&laquo;</a>
+				<th:block
+					th:each="pageNum:${#numbers.sequence(session.pageMaker.getStartPage(),session.pageMaker.getEndPage())}">
+               &nbsp;<a th:text="${pageNum}"
+						th:onclick="|javascript:page('${pageNum}')|"></a>&nbsp;
+           </th:block>
+				<a th:if="${session.pageMaker.isNext()}"
+					style="text-decoration: none;"
+					th:onclick="|javascript:page('${session.pageMaker.getEndPage()}')|">&raquo;</a>
+
+
+
+			</div>
+
+		</div>
+	</div>
+
+
+
+</body>
+</html>
+
