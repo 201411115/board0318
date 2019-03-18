@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>연습용 board</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<style>
+</style>
+</head>
+<body>
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.2/dist/vue.js"></script>
+	<header>
+		<h1>BOARD SERVICE</h1>
+	</header>
+	<script>
+		var app3 = new Vue({
+			el : '#app-3',
+			data : {
+				seen : true
+			}
+		})
+		
+		methods:{
+			logout: function(){
+				this.$session.destroy()
+				thos.authenticated=false;
+			}
+		}
+	</script>
+
+	<ul class="nav navbar-nav">
+		<div id="app-3">
+			<p v-if="seen">Welcome</p>
+		</div>
+		<li><a href="/freeboard">게시글목록조회</a></li>
+		<li th:if="${session.loginUser!=null}"><a href="/editpage">회원정보메뉴</a></li>
+		<template>
+		<div id="join">
+			<div>Login</div>
+			<input v-model="user.id" placeholder="ID"> <br /> <input
+				v-model="user.password" type="password" placeholder="password">
+			<button v-on:click="login">login</button>
+			<a v-bind:href="url.signUpUrl"> Sign up </a>
+		</div>
+		</template>
+
+	</ul>
+	<ul class="nav navbar-nav navbar-right">
+
+		<li v-if={this.$session.loginUser==null}><a href="/joinpage"><span
+				class="glyphicon glyphicon-log-in"></span>회원가입</a></li>
+		<li v-if={this.$session.loginUser==null}><a href="/loginpage"><span
+				class="glyphicon glyphicon-log-in"></span> 로그인</a></li>
+		<li v-if={this.$session.exists()==null}><a href="/logout"><span
+				class="glyphicon glyphicon-log-in"></span> 로그아웃</a></li>
+
+	</ul>
+
+
+
+
+
+</body>
+</html>
+
